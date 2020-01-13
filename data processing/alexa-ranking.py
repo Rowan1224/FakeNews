@@ -5,7 +5,6 @@ import requests
 from bs4 import BeautifulSoup
 
 
-
 url = 'https://www.alexa.com/siteinfo/bd24live.com'
 print(url)
 res = requests.get(url)

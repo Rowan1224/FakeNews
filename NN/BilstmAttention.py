@@ -1,12 +1,13 @@
-import os
+import os, sys
 
 from sklearn import metrics
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.python.ops.rnn import bidirectional_dynamic_rnn as bi_rnn
 from tensorflow.contrib.rnn import BasicLSTMCell
+from tensorflow.python.client import device_lib
 import numpy as np
 
 import pandas as pd
@@ -14,6 +15,8 @@ from sklearn.utils import shuffle
 
 # from utils.prepare_data import *
 import time
+
+
 # from utils.model_helper import *
 
 def make_train_feed_dict(model, batch):
@@ -40,6 +43,7 @@ def run_train_step(model, sess, batch):
     }
     return sess.run(to_return, feed_dict)
 
+
 def printScore(y_true, y_pred):
     # Model Accuracy: how often is the classifier correct?
     print("Accuracy:", metrics.accuracy_score(y_true, y_pred))
@@ -55,6 +59,15 @@ def printScore(y_true, y_pred):
 
     print(metrics.classification_report(y_true, y_pred))
 
+    report = metrics.classification_report(y_test, y_pred, output_dict=True)
+    true = report['1']
+    fake = report['0']
+
+    overall = {"Accuracy": metrics.accuracy_score(y_true, y_pred), "Recall": metrics.recall_score(y_true, y_pred),
+               "F1-Score": metrics.f1_score(y_true, y_pred)}
+    return true, fake, overall
+
+
 def run_eval_step(model, sess, batch):
     feed_dict = make_test_feed_dict(model, batch)
     prediction = sess.run(model.prediction, feed_dict)
@@ -65,6 +78,7 @@ def run_eval_step(model, sess, batch):
 def get_attn_weight(model, sess, batch):
     feed_dict = make_train_feed_dict(model, batch)
     return sess.run(model.alpha, feed_dict)
+
 
 class ABLSTM(object):
     def __init__(self, config):
@@ -111,9 +125,14 @@ class ABLSTM(object):
         FC_W = tf.Variable(tf.truncated_normal([self.hidden_size, self.n_class], stddev=0.1))
         FC_b = tf.Variable(tf.constant(0., shape=[self.n_class]))
         y_hat = tf.nn.xw_plus_b(h_drop, FC_W, FC_b)
+        class_weights = tf.constant([0.75, .25])
+        weighted_logits = tf.multiply(y_hat, class_weights)
 
         self.loss = tf.reduce_mean(
-            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y_hat, labels=self.label))
+            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=weighted_logits, labels=self.label))
+
+        # self.loss = tf.reduce_mean(
+        #     tf.nn.weighted_cross_entropy_with_logits(logits= y_hat, targets=self.label, pos_weight=class_weights))
 
         # prediction
         self.prediction = tf.argmax(tf.nn.softmax(y_hat), 1)
@@ -142,6 +161,12 @@ def fill_feed_dict(data_X, data_Y, batch_size):
 
 
 if __name__ == '__main__':
+
+    config_gpu = tf.ConfigProto()
+    config_gpu.gpu_options.visible_device_list = '0'
+    device_name = sys.argv
+    print(device_lib.list_local_devices())
+
     # load data
     df = pd.read_csv("../Data/Corpus/AllDataTarget.csv")
     X = df["news"].values
@@ -175,8 +200,6 @@ if __name__ == '__main__':
 
     print("Validation Size: ", dev_size)
 
-
-
     word_index = tokenizer.word_index
     embeddings_index = {}
     for i, line in enumerate(open('/media/MyDrive/Project Fake news/Models/cc.bn.300.vec')):
@@ -193,23 +216,26 @@ if __name__ == '__main__':
 
     config = {
         "max_len": 32,
-        "hidden_size": 64,
+        "hidden_size": 256,
         "vocab_size": vocab_size,
         "embedding_size": 300,
         "n_class": 2,
         "learning_rate": 2e-3,
-        "batch_size": 4,
-        "train_epoch": 20,
+        "batch_size": 32,
+        "train_epoch": 25,
         "embedding": embedding_matrix
     }
 
     classifier = ABLSTM(config)
     classifier.build_graph()
 
-    sess = tf.Session()
+    sess = tf.Session(config=config_gpu)
     sess.run(tf.global_variables_initializer())
     dev_batch = (x_dev, y_dev)
     start = time.time()
+    true_df = []
+    fake_df = []
+    overall_df = []
     for e in range(config["train_epoch"]):
 
         t0 = time.time()
@@ -225,18 +251,32 @@ if __name__ == '__main__':
         dev_acc, pred, true = run_eval_step(classifier, sess, dev_batch)
         print("validation accuracy: %.3f " % dev_acc)
 
-    print("Training finished, time consumed : ", time.time() - start, " s")
-    print("Start evaluating:  \n")
-    cnt = 0
-    test_acc = 0
-    y_pred = []
-    y_true = []
-    for x_batch, y_batch in fill_feed_dict(x_test, y_test, config["batch_size"]):
-        acc, pred, true = run_eval_step(classifier, sess, (x_batch, y_batch))
-        y_pred.extend(pred)
-        y_true.extend(true)
-        test_acc += acc
-        cnt += 1
+        print("Training finished, time consumed : ", time.time() - start, " s")
+        print("Start evaluating:  \n")
+        cnt = 0
+        test_acc = 0
+        y_pred = []
+        y_true = []
+        for x_batch, y_batch in fill_feed_dict(x_test, y_test, config["batch_size"]):
+            acc, pred, true = run_eval_step(classifier, sess, (x_batch, y_batch))
+            y_pred.extend(pred)
+            y_true.extend(true)
+            test_acc += acc
+            cnt += 1
 
-    printScore(y_true, y_pred)
-    print("Test accuracy : %f %%" % (test_acc / cnt * 100))
+        t, f, o = printScore(y_true, y_pred)
+        t["epoch"] = e
+        f["epoch"] = e
+        o["epoch"] = e
+        true_df.append(t)
+        fake_df.append(f)
+        overall_df.append(o)
+        print("Test accuracy : %f %%" % (test_acc / cnt * 100))
+
+    df = pd.DataFrame(true_df)
+    df.to_csv("../Data/results/true.csv", index=None, header=True)
+    df = pd.DataFrame(fake_df)
+    df.to_csv("../Data/results/fake.csv", index=None, header=True)
+    df = pd.DataFrame(overall_df)
+    df.to_csv("../Data/results/overall.csv", index=None, header=True)
+

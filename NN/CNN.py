@@ -8,7 +8,7 @@ from torch.nn import functional as F
 class CNN(nn.Module):
 	def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
 		super(CNN, self).__init__()
-		
+
 		"""
 		Arguments
 		---------
@@ -33,7 +33,7 @@ class CNN(nn.Module):
 		self.padding = padding
 		self.vocab_size = vocab_size
 		self.embedding_length = embedding_length
-		
+
 		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
 		weights = torch.tensor(weights, dtype=torch.float32)
 		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
@@ -43,37 +43,19 @@ class CNN(nn.Module):
 		self.conv4 = nn.Conv2d(in_channels, out_channels, (kernel_heights[3], embedding_length), stride, padding)
 		self.dropout = nn.Dropout(keep_probab)
 		self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-	
-	def conv_block(self, input, conv_layer):
-		conv_out = conv_layer(input)# conv_out.size() = (batch_size, out_channels, dim, 1)
-		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
-		max_out = F.avg_pool1d(activation, activation.size()[2]).squeeze(2)
 
-		
+	def conv_block(self, input, conv_layer):
+		conv_out = conv_layer(input)  # conv_out.size() = (batch_size, out_channels, dim, 1)
+		activation = F.relu(conv_out.squeeze(3))  # activation.size() = (batch_size, out_channels, dim1)
+		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)
+
 		return max_out
-	
+
+
 	def forward(self, input_sentences, batch_size=None):
-		
-		"""
-		The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
-		whose shape for each batch is (num_seq, embedding_length) with kernel of varying height but constant width which is same as the embedding_length.
-		We will be using ReLU activation after the convolution operation and then for each kernel height, we will use max_pool operation on each tensor 
-		and will filter all the maximum activation for every channel and then we will concatenate the resulting tensors. This output is then fully connected
-		to the output layers consisting two units which basically gives us the logits for both positive and negative classes.
-		
-		Parameters
-		----------
-		input_sentences: input_sentences of shape = (batch_size, num_sequences)
-		batch_size : default = None. Used only for prediction on a single sentence after training (batch_size = 1)
-		
-		Returns
-		-------
-		Output of the linear layer containing logits for pos & neg class.
-		logits.size() = (batch_size, output_size)
-		
-		"""
-		
+
 		input = self.word_embeddings(input_sentences)
+		# input = input.permute(1, 0, 2)
 		# input.size() = (batch_size, num_seq, embedding_length)
 		input = input.unsqueeze(1)
 		# input.size() = (batch_size, 1, num_seq, embedding_length)
@@ -81,11 +63,13 @@ class CNN(nn.Module):
 		max_out2 = self.conv_block(input, self.conv2)
 		max_out3 = self.conv_block(input, self.conv3)
 		max_out4 = self.conv_block(input, self.conv4)
-		
+		#
 		all_out = torch.cat((max_out1, max_out2, max_out3, max_out4), 1)
+
+
 		# all_out.size() = (batch_size, num_kernels*out_channels)
 		fc_in = self.dropout(all_out)
 		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 		logits = self.label(fc_in)
-		
+
 		return logits

@@ -255,4 +255,20 @@ def appendix():
 #
 # true_news(df_true)
 
-fake_news()
+# fake_news()
+# path = "../Fake News Dataset/Authentic-48K.csv"
+# df = pd.read_csv(path)
+# df = df["category"].value_counts()
+# true = dict(df)
+# print(true)
+path = "../Fake News Dataset/LabeledFake-1K.csv"
+
+df = pd.read_csv(path)
+print(list(df))
+df = df["F-type"].value_counts()
+fake = dict(df)
+print(fake)
+final = {}
+# for k, v in fake.items():
+#     final[k] = fake[k]+true[k]
+#     print(k+" "+str(final[k]))

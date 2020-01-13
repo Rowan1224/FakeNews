@@ -61,38 +61,37 @@ def writetofile(ID, domain, date, type, headline, content):
         infile.close()
 
 
-def ret_news_headline(HeadlineSet):
+def ret_news_headline():
     news = con.cursor(buffered=True)
-    news.execute("""select  domain,date,type,headline,content from parse_news""")
+    news.execute("""select domain,date,category,headline,content from parse_news""")
+
     ID = 0
     print(news.rowcount)
-    with open('../Data/Corpus/RowCorpus.csv', 'w') as CSV:
+    with open('../Data/Corpus/AuthenticCorpus.csv', 'w') as CSV:
         writer = csv.writer(CSV)
-        headers = ["articleID", "domain", "date", "type", "headline", "content"]
+        headers = ["articleID", "domain", "date", "category", "relation", "headline", "content", "label"]
         writer.writerow(headers)
-        for domain, date, type, headline, content in news:
-            if headline in HeadlineSet:
-                continue
-            else:
-                ID += 1
-                HeadlineSet.add(headline)
-                row = [str(format(ID, '04d'))+".txt", domain, str(date), type, headline, content]
-                writer.writerow(row)
+        for domain, date, category, headline, content in news:
+            ID += 1
+            row = [str(format(ID, '04d')), domain, str(date), category, "related", headline, content, 1]
+            writer.writerow(row)
 
 
-# df = pd.read_csv("../Data/Corpus/Corpus.csv")
-# print(df.shape)
-# df = df.drop_duplicates(subset="content", keep=False)
-# headline = df["headline"].values
-# headline = set(headline)
-# print(len(headline))
-# ret_news_headline(headline)
-df = pd.read_csv("../Data/Corpus/RowCorpus.csv")
+df = pd.read_csv("../Data/Corpus/FakeCorpus.csv")
 print(df.shape)
-df = df.drop_duplicates(subset="content", keep=False)
+df = df.drop_duplicates(subset="content", keep="first")
+print(df.shape)
+# # headline = df["headline"].values
+# # headline = set(headline)
+# # print(len(headline))
+ret_news_headline()
+df = pd.read_csv("../Data/Corpus/AuthenticCorpus.csv")
+print(df.shape)
+df = df.drop_duplicates(subset="content", keep="first")
+df.to_csv("../Data/Corpus/AuthenticCorpus.csv")
 print(df.shape)
 
-for row in df.iterrows():
-    articleID, domain, date, type, headline, content = row[1]
-    writetofile(articleID, domain, date, type, headline, content)
+# for row in df.iterrows():
+#     articleID, domain, date, type, headline, content = row[1]
+#     writetofile(articleID, domain, date, type, headline, content)
 

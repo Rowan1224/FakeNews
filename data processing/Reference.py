@@ -4,6 +4,8 @@ import pandas as pd
 import requests
 
 from bs4 import BeautifulSoup
+
+
 def allreferences():
     file_dir = "/media/MyDrive/Project Fake news/Data/Model - Data/AllTrueData(Unformat)"
     news_list = os.listdir(file_dir)
@@ -24,6 +26,7 @@ def allreferences():
     with open("/media/MyDrive/Project Fake news/Data/Ref-class", "w") as outfile:
         for ref in ref_set:
             outfile.write(ref + "\n")
+
 
 def reftrsutlevel():
     # with open('Data/Corpus/ref.csv', 'r') as readFile:

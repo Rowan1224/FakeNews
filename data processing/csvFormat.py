@@ -58,6 +58,27 @@ def textToCsv(ArtcleList,type):
             ID += 1
 
 
+def textTotsv(ArtcleList,type):
+    dir = "../Data/TSV"
+    ID = 0
+
+    with open(dir + '/' + type + '.tsv', 'wt') as out_file:
+        tsv_writer = csv.writer(out_file, delimiter='\t')
+        if type == "test":
+            row = ["ID","Article"]
+            tsv_writer.writerow(row)
+
+
+        for article in ArtcleList:
+            label = dataDict[article]
+            if type == "train" or "dev":
+                row = [ID,label,"a",article]
+            else:
+                row = [ID,article]
+            ID += 1
+            tsv_writer.writerow(row)
+
+
 
 def readFile(newsType):
     newsList = []
@@ -81,25 +102,23 @@ def readFile(newsType):
                 dataDict[line] = label
     return newsList
 
+
 def FixDataset(path):
-    data = pd.read_csv(path,header=None)
-    data.columns = ["Label","Article"]
+    data = pd.read_csv(path, header=None)
+    data.columns = ["Label", "Article"]
     print(data.Label.count())
 
 
 
-
-
-
-
-# TrueArticles = readCSV()
-# SatireArticles = readFile("Satire")
-# AllData = TrueArticles + SatireArticles
-# AllData = randomize_files(AllData)
-# train,test = get_training_and_testing_sets(list(AllData))
-#
-# textToCsv(train, "train")
-# textToCsv(test, "test")
-# print(AllData)
+TrueArticles = readCSV()
+SatireArticles = readFile("Satire")
+AllData = TrueArticles + SatireArticles
+AllData = randomize_files(AllData)
+train,test = get_training_and_testing_sets(list(AllData))
+train, dev = get_training_and_testing_sets(train)
+textTotsv(train, "train")
+textTotsv(dev, "dev")
+textTotsv(test, "test")
+print(AllData)
 
 FixDataset("/media/MyDrive/Project Fake news/paper with dataset/Hannah2017/newsfiles/fulltrain.csv")

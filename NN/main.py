@@ -2,7 +2,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import time
 import NN.load_data as load_data
-from NN import CNN, RCNN, RNN, LSTM, selfAttention,GRU
+from NN import CNN, RCNN, RNN, LSTM, selfAttention, GRU, CNN_attention
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
@@ -105,7 +105,7 @@ output_size = 2
 hidden_size = 256
 embedding_length = 300
 
-epochs = 100
+epochs = 300
 
 in_channels = 1
 out_channels = 256
@@ -114,7 +114,7 @@ stride = 1
 padding = 0
 keep_probab = 0.8
 
-# model = RNN.RNN(batch_size, output_size, hidden_size, vocab_size, embedding_length, word_embeddings)
+
 model = CNN.CNN(batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, word_embeddings)
 loss_fn = F.cross_entropy
 
@@ -127,4 +127,5 @@ for epoch in range(epochs):
 test_loss, test_acc, y_test, y_pred = eval_model(model, test_iter)
 print(f'Test Loss: {test_loss:.3f}, Test Acc: {test_acc:.2f}%')
 printScore(y_test, y_pred)
+
 

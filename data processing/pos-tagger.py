@@ -1,33 +1,12 @@
-# # import spacy
-# # # import bn_core_news_sm
-# #
-# # nlp = spacy.load("/media/MyDrive/Project Fake news/Models/bn_core_news_sm-2.0.0/bn_core_news_sm/bn_core_news_sm-2.0.0")
-# # doc = nlp(u'আমি বাংলায় গান গাই। তুমি কি গাও?')
-# #
-# #
-# # print(doc.ents)
-# # for token in doc:
-# #     print(token.text, token.pos_)
-#
-#
-# # nlp = spacy.load("en_core_web_sm")
-# # doc = nlp("Apple is looking at buying U.K. startup for $1 billion")
-# #
-# # for token in doc:
-# #     print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
-# #             token.shape_, token.is_alpha, token.is_stop)
-#
-
+# %%
 
 import pandas as pd
 import requests, json
-
-path = ""
+path = r"C:\Users\user\Desktop\tomorrow\Corpus\AllDataTarget.csv" #csv file path
 Baseurl = "http://10.100.222.160:5004/predict"
 
 
 def doc2senlist(doc):
-
     doc = doc.replace("?", "!")
     doc = doc.replace("।", "!")
     sentenceList = doc.split("!")
@@ -36,14 +15,14 @@ def doc2senlist(doc):
 
 
 def pos(sen):
-    param ={"sentence": sen}
+    param = {"sentence": sen}
     response = requests.get(url=Baseurl, params=param).json()
-    result = json.loads(response)
-    return result
+
+    return response
 
 
-def counter(posCount, posResult):
-    for token, pos in posResult:
+def POScounter(posCount, posResult):
+    for token, pos in posResult.items():
         if pos in posCount.keys():
             posCount[pos] = posCount[pos] + 1
         else:
@@ -53,13 +32,29 @@ def counter(posCount, posResult):
 
 
 df = pd.read_csv(path)
-
+dataset = []
+header = set()
 for row in df.iterrows():
-    news = row[0][2]
+
+    news = row[1]["news"]
     sentenceList = doc2senlist(news)
     posCount = {}
+    posCount["articleID"] = row[1]["articleID"]
     for sentence in sentenceList:
         posResult = pos(sentence)
-        posCount = counter(posCount, posResult)
+        posCount = POScounter(posCount, posResult)
+    #     for head in posCount.keys():
+    #         header.add(head)
+    dataset.append(posCount)
+    print(len(dataset))
+#     print(posCount)
 
-    print(posCount)
+print(header)
+print(len(dataset))
+
+output = pd.DataFrame.from_dict(dataset)
+output.to_csv(r"C:\Users\user\Desktop\tomorrow\Corpus\AllPOSData.csv")
+
+# %%
+
+
