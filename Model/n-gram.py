@@ -96,9 +96,9 @@ def tfidf_charF(X):
 
     tfidf_char.fit(X.values.astype('U'))
     x_char = tfidf_char.transform(X.values.astype('U'))
-    outfile = open("../API/tfidf_char_pkl", 'wb')
-    pickle.dump(tfidf_char, outfile)
-    outfile.close()
+    # outfile = open("../API/tfidf_char_pkl", 'wb')
+    # pickle.dump(tfidf_char, outfile)
+    # outfile.close()
     return x_char
 
 
@@ -147,17 +147,16 @@ X = df.news
 # print(dfPOS.shape)
 # X_POS = sparse.csr.csr_matrix(dfPOS.values)
 
-# dfEmb = word_emb()
-# X_Emb = sparse.csr.csr_matrix(dfEmb.values)
+dfEmb = word_emb()
+X_Emb = sparse.csr.csr_matrix(dfEmb.values)
 
 X_char = tfidf_charF(X)
-# X_word = tfidf_wordF(X)
+X_word = tfidf_wordF(X)
 
-# dfMP = mp()
-# X_MP = sparse.csr.csr_matrix(dfMP.values)
+dfMP = mp()
+X_MP = sparse.csr.csr_matrix(dfMP.values)
 
-# X = sparse.hstack((X_word, X_char, X_Emb, X_MP))
-X = X_char
+X = sparse.hstack((X_word, X_char, X_Emb, X_MP))
 Y = df[["label"]]
 
 print(X.shape)
@@ -170,25 +169,19 @@ clf = svm.SVC(kernel='linear', C=10, cache_size=7000)
 
 # clf = LogisticRegression()
 
-#Train the model using the training sets
 clf.fit(X_train, y_train)
-outfile = open("../API/model", 'wb')
-pickle.dump(clf, outfile)
-outfile.close()
 
-#Predict the response for test dataset
+#Save Model
+# outfile = open("../API/model", 'wb')
+# pickle.dump(clf, outfile)
+# outfile.close()
+
+
 y_pred = clf.predict(X_test)
-
-
 print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
-
 print("Precision:", metrics.precision_score(y_test, y_pred))
-
 print("Recall:", metrics.recall_score(y_test, y_pred))
-
 print("F1-Score:", metrics.f1_score(y_test, y_pred))
-
 print("Confusion Matrix:", metrics.confusion_matrix(y_test, y_pred))
-
 print(metrics.classification_report(y_test, y_pred))
 
