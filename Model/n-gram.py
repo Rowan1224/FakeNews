@@ -11,11 +11,7 @@ from sklearn import metrics
 from sklearn import svm
 from scipy import sparse, hstack, vstack
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB
-# s = s.lower()
-# s = re.sub(r'[^a-zA-Z0-9\s]', ' ', s)
-# tokens = [token for token in s.split(" ") if token != ""]
-# output = list(ngrams(tokens, 5))
+import pickle
 import string
 
 puncList = ["।", "”", "“", "’"]
@@ -95,11 +91,14 @@ def word_emb():
 
 
 def tfidf_charF(X):
-    tfidf_char = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', ngram_range=(3, 5), stop_words=stopWords,
+    tfidf_char = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', ngram_range=(3, 3), stop_words=stopWords,
                                  decode_error='replace', encoding='utf-8', analyzer='char')
 
-    x_char = tfidf_char.fit_transform(X.values.astype('U'))
-
+    tfidf_char.fit(X.values.astype('U'))
+    x_char = tfidf_char.transform(X.values.astype('U'))
+    outfile = open("../API/tfidf_char_pkl", 'wb')
+    pickle.dump(tfidf_char, outfile)
+    outfile.close()
     return x_char
 
 
@@ -108,8 +107,11 @@ def tfidf_wordF(X):
                                  stop_words=stopWords, decode_error='replace',
                                  encoding='utf-8', analyzer='word', tokenizer=tokenizer)
 
-    x_word = tfidf_word.fit_transform(X.values.astype('U'))
 
+    x_word = tfidf_word.fit_transform(X.values.astype('U'))
+    # outfile = open("tfidf_word_pkl", 'wb')
+    # pickle.dump(x_word, outfile)
+    # outfile.close()
     return x_word
 
 
@@ -145,16 +147,17 @@ X = df.news
 # print(dfPOS.shape)
 # X_POS = sparse.csr.csr_matrix(dfPOS.values)
 
-dfEmb = word_emb()
-X_Emb = sparse.csr.csr_matrix(dfEmb.values)
+# dfEmb = word_emb()
+# X_Emb = sparse.csr.csr_matrix(dfEmb.values)
 
 X_char = tfidf_charF(X)
-X_word = tfidf_wordF(X)
+# X_word = tfidf_wordF(X)
 
-dfMP = mp()
-X_MP = sparse.csr.csr_matrix(dfMP.values)
+# dfMP = mp()
+# X_MP = sparse.csr.csr_matrix(dfMP.values)
 
-X = sparse.hstack((X_word, X_char, X_Emb, X_MP))
+# X = sparse.hstack((X_word, X_char, X_Emb, X_MP))
+X = X_char
 Y = df[["label"]]
 
 print(X.shape)
@@ -162,18 +165,19 @@ print(Y.shape)
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y.values.ravel(), test_size=0.3, random_state=109)
 
-#Create a LR Classifier
-# clf = svm.SVC(kernel='linear', C=10, cache_size=7000)
+# Create a LR Classifier
+clf = svm.SVC(kernel='linear', C=10, cache_size=7000)
 
-clf = LogisticRegression()
+# clf = LogisticRegression()
 
 #Train the model using the training sets
 clf.fit(X_train, y_train)
+outfile = open("../API/model", 'wb')
+pickle.dump(clf, outfile)
+outfile.close()
 
 #Predict the response for test dataset
 y_pred = clf.predict(X_test)
-
-
 
 
 print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
