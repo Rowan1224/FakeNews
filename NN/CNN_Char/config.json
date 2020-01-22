@@ -1,0 +1,108 @@
+{
+  "notes": "default",
+  "data": {
+    "alphabet": "অআইঈউঊঋএঐওঔা ি ী ু ূ ৃ ে ৈ ো ৌকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়ৎ ং ঃ ঁ।”“’০১২৩৪৫৬৭৮৯-,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
+    "alphabet_size": 119,
+    "input_size": 1014,
+    "num_of_classes": 2
+
+  },
+  "model": "char_cnn_zhang",
+  "training": {
+    "epochs": 1,
+    "batch_size": 32,
+    "evaluate_every": 100,
+    "checkpoint_every": 100
+  },
+  "char_tcn": {
+    "embedding_size": 128,
+    "conv_layers": [
+      [
+        256,
+        5
+      ],
+      [
+        256,
+        5
+      ]
+    ],
+    "fully_connected_layers": [
+      1024
+    ],
+    "dropout_p": 0.2,
+    "optimizer": "adam",
+    "loss": "categorical_crossentropy"
+  },
+  "char_cnn_kim": {
+    "embedding_size": 128,
+    "conv_layers": [
+      [
+        256,
+        10
+      ],
+      [
+        256,
+        7
+      ],
+      [
+        256,
+        5
+      ],
+      [
+        256,
+        3
+      ]
+    ],
+    "fully_connected_layers": [
+      1024,
+      1024
+    ],
+    "threshold": 1e-12,
+    "dropout_p": 0.1,
+    "optimizer": "adam",
+    "loss": "categorical_crossentropy"
+  },
+  "char_cnn_zhang": {
+    "embedding_size": 128,
+    "conv_layers": [
+      [
+        256,
+        7,
+        3
+      ],
+      [
+        256,
+        7,
+        3
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        3
+      ]
+    ],
+    "fully_connected_layers": [
+      1024,
+      1024
+    ],
+    "threshold": 1e-12,
+    "dropout_p": 0.5,
+    "optimizer": "adam",
+    "loss": "categorical_crossentropy"
+  }
+}
