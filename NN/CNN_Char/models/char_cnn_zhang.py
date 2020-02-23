@@ -59,7 +59,7 @@ class CharCNNZhang(object):
         self.conv_layers = conv_layers
         self.fully_connected_layers = fully_connected_layers
         self.num_of_classes = num_of_classes
-        self.threshold = threshold
+        self.threshold = 0.0
         self.dropout_p = dropout_p
         self.optimizer = optimizer
         self.loss = loss

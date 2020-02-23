@@ -32,7 +32,7 @@ FLAGS = tf.flags.FLAGS
 # FLAGS._parse_flags()
 
 FLAGS(sys.argv)
-
+modelName = ""
 if __name__ == "__main__":
     # Load configurations
     config = json.load(open("config.json"))
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     validation_inputs, validation_labels = data.get_all_data("test")
 
     # Load model configurations and build model
-    if FLAGS.model == "kim":
+    if modelName == "kim":
         model = CharCNNKim(input_size=config["data"]["input_size"],
                            alphabet_size=config["data"]["alphabet_size"],
                            embedding_size=config["char_cnn_kim"]["embedding_size"],
@@ -60,7 +60,7 @@ if __name__ == "__main__":
                            dropout_p=config["char_cnn_kim"]["dropout_p"],
                            optimizer=config["char_cnn_kim"]["optimizer"],
                            loss=config["char_cnn_kim"]["loss"])
-    elif FLAGS.model == 'tcn':
+    elif modelName == 'tcn':
         model = CharTCN(input_size=config["data"]["input_size"],
                         alphabet_size=config["data"]["alphabet_size"],
                         embedding_size=config["char_tcn"]["embedding_size"],
@@ -85,13 +85,13 @@ if __name__ == "__main__":
     model.train(training_inputs=training_inputs,
                 training_labels=training_labels,
                 epochs=config["training"]["epochs"],
-                batch_size=config["training"]["batch_size"],
-                checkpoint_every=config["training"]["checkpoint_every"])
+                batch_size=config["training"]["batch_size"])
 
     # loss, accuracy, f1_score, precision, recall, = model.test(testing_inputs=validation_inputs,
     #                                                           testing_labels=validation_labels,
     #                                                           batch_size=config["training"]["batch_size"])
     # print(loss, accuracy, f1_score, precision, recall)
+    # checkpoint_every = config["training"]["checkpoint_every"]
 
     # print(validation_labels)
     #

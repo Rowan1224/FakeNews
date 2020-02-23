@@ -79,8 +79,9 @@ def analyser(content):
     return total_chars, total_punctuation, total_word, total_sentence
 
 
-def true_news(df_true):
-    df_true = df_true.dropna()
+def df_iteration(df, type):
+    df_true = df.dropna()
+    total = df_true.shape[0]
     chars = 0
     punc = 0
     word = 0
@@ -93,11 +94,11 @@ def true_news(df_true):
         word += w
         sentence += s
     print(df_true.shape)
-    print("Type         True")
-    print("Chars         " + str(chars))
-    print("Punctuation         " + str(punc))
-    print("Word         " + str(word))
-    print("Sentence         " + str(sentence))
+    print("Type         "+type)
+    print("Chars         " + str(chars/total))
+    print("Punctuation         " + str(punc/total))
+    print("Word         " + str(word/total))
+    print("Sentence         " + str(sentence/total))
     print("===================================================")
 
 
@@ -114,64 +115,26 @@ def alexa_rank(domain):
         return rank
 
 
-def fake_news():
-    dir = os.listdir("../Data/Dataset/Fake News")
-    base = "../Data/Dataset/Fake News/"
-    listOfDict = []
-    for news in dir:
-        with open(base+news,"r") as infile:
-            i = 0
-            row = {}
-            for line in infile:
-
-                i += 1
-                if i == 2:
-                    row["domain"] = str(line).replace("\n", "")
-                if i == 5:
-                    row["content"] = str(line).replace("\n", "")
-        listOfDict.append(row)
-
-    df_fake = pd.DataFrame(listOfDict)
-    df_fake = df_fake.dropna()
-    domain_count = df_fake.domain.value_counts().to_dict()
-
-    print(len(domain_count))
-    chars = 0
-    punc = 0
-    word = 0
-    sentence = 0
-    for row in df_fake.iterrows():
-        content = row[1]["content"]
-        c, p, w, s = analyser(content)
-        chars += c
-        punc += p
-        word += w
-        sentence += s
-    print(df_fake.shape)
-    print("Type         Fake")
-    print("Chars         " + str(chars))
-    print("Punctuation         " + str(punc))
-    print("Word         " + str(word))
-    print("Sentence         " + str(sentence))
-    print("===================================================")
-
-    return domain_count
-
-
 def appendix():
-    df_true = pd.read_csv("../Data/Corpus/RowCorpus.csv")
-    df_fake = pd.read_csv("../Data/Corpus/FakeCorpus.csv")
+    df_true = pd.read_csv("../Fake News Dataset/Authentic-48K.csv")
+    df_fake = pd.read_csv("../Fake News Dataset/LabeledFake-1K.csv")
     true = df_true.domain.value_counts().to_dict()
-    fake = fake_news()
     others = df_fake.groupby("F-type").domain.value_counts().to_dict()
+    fake = {}
     satire = {}
     clickbait = {}
+    total_true = 0
+    total_fake = 0
+    total_satire = 0
+    total_clickbait = 0
     for key, value in others.items():
         t, d = key
         if t == "Clickbaits":
             clickbait[d] = value
-        else:
+        elif t == "Satire":
             satire[d] = value
+        else:
+            fake[d] = value
     print(satire)
 
     trueList = []
@@ -183,6 +146,7 @@ def appendix():
         row["domain"] = domain
         row["rank"] = rank
         row["count"] = count
+        total_true += count
         trueList.append(row)
 
     FakeList = []
@@ -194,6 +158,7 @@ def appendix():
         row["domain"] = domain
         row["rank"] = rank
         row["count"] = count
+        total_fake += count
         FakeList.append(row)
 
     satireList = []
@@ -205,6 +170,7 @@ def appendix():
         row["domain"] = domain
         row["rank"] = rank
         row["count"] = count
+        total_satire += count
         satireList.append(row)
 
     clickbaitList = []
@@ -216,8 +182,13 @@ def appendix():
         row["domain"] = domain
         row["rank"] = rank
         row["count"] = count
+        total_clickbait += count
         clickbaitList.append(row)
 
+    print(total_true)
+    print(total_fake)
+    print(total_satire)
+    print(total_clickbait)
     pd.DataFrame(trueList).to_csv("../Data/Appendix/True.csv")
     pd.DataFrame(FakeList).to_csv("../Data/Appendix/Fake.csv")
     pd.DataFrame(satireList).to_csv("../Data/Appendix/Satire.csv")
@@ -256,19 +227,46 @@ def appendix():
 # true_news(df_true)
 
 # fake_news()
-# path = "../Fake News Dataset/Authentic-48K.csv"
-# df = pd.read_csv(path)
-# df = df["category"].value_counts()
-# true = dict(df)
-# print(true)
-path = "../Fake News Dataset/LabeledFake-1K.csv"
 
-df = pd.read_csv(path)
-print(list(df))
-df = df["F-type"].value_counts()
-fake = dict(df)
-print(fake)
-final = {}
-# for k, v in fake.items():
-#     final[k] = fake[k]+true[k]
-#     print(k+" "+str(final[k]))
+# path = "../Fake News Dataset/LabeledFake-1K.csv"
+#
+# df = pd.read_csv(path)
+# print(list(df))
+# df = df["F-type"].value_counts()
+# fake = dict(df)
+# print(fake)
+# final = {}
+# # for k, v in fake.items():
+# #     final[k] = fake[k]+true[k]
+# #     print(k+" "+str(final[k]))
+
+def categories():
+    path = "../Fake News Dataset/Authentic-48K.csv"
+    df = pd.read_csv(path)
+    print(df.shape)
+    df = df.dropna()
+    df = df["category"].value_counts()
+    true = dict(df.dropna())
+    print(true)
+
+    path = "../Fake News Dataset/LabeledFake-1K.csv"
+    df = pd.read_csv(path)
+    df = df["category"].value_counts()
+    false = dict(df.dropna())
+    print(false)
+
+
+def dataDistribution():
+    df_true = pd.read_csv("../Fake News Dataset/Authentic-48K.csv")
+    df_fake = pd.read_csv("../Fake News Dataset/LabeledFake-1K.csv")
+    df_iteration(df_true, "Authentic")
+    df_iteration(df_fake, "Fake")
+
+
+# To create the appendix table
+# appendix()
+
+dataDistribution()
+
+# categories()
+

@@ -5,6 +5,27 @@ from keras.layers import GlobalMaxPooling1D
 from keras.layers import Embedding
 from keras.layers import AlphaDropout
 from keras.callbacks import TensorBoard
+from keras import backend as K
+
+
+def recall_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+
+def precision_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+
+def f1_m(y_true, y_pred):
+    precision = precision_m(y_true, y_pred)
+    recall = recall_m(y_true, y_pred)
+    return 2 * ((precision * recall) / (precision + recall + K.epsilon()))
 
 
 class CharCNNKim(object):
@@ -79,8 +100,7 @@ class CharCNNKim(object):
         self.model.summary()
 
     def train(self, training_inputs, training_labels,
-              validation_inputs, validation_labels,
-              epochs, batch_size, checkpoint_every=100):
+              epochs, batch_size):
         """
         Training function
 
@@ -97,18 +117,17 @@ class CharCNNKim(object):
 
         """
         # Create callbacks
-        tensorboard = TensorBoard(log_dir='./logs', histogram_freq=checkpoint_every, batch_size=batch_size,
-                                  write_graph=False, write_grads=True, write_images=False,
-                                  embeddings_freq=checkpoint_every,
-                                  embeddings_layer_names=None)
+        # tensorboard = TensorBoard(log_dir='./logs', histogram_freq=checkpoint_every, batch_size=batch_size,
+        #                           write_graph=False, write_grads=True, write_images=False,
+        #                           embeddings_freq=checkpoint_every,
+        #                           embeddings_layer_names=None)
         # Start training
         print("Training CharCNNKim model: ")
         self.model.fit(training_inputs, training_labels,
-                       validation_data=(validation_inputs, validation_labels),
+                       validation_split=0.2,
                        epochs=epochs,
                        batch_size=batch_size,
-                       verbose=2,
-                       callbacks=[tensorboard])
+                       verbose=2)
 
     def test(self, testing_inputs, testing_labels, batch_size):
         """
@@ -123,5 +142,6 @@ class CharCNNKim(object):
 
         """
         # Evaluate inputs
-        self.model.evaluate(testing_inputs, testing_labels, batch_size=batch_size, verbose=1)
+        # self.model.evaluate(testing_inputs, testing_labels, batch_size=batch_size, verbose=1)
         # self.model.predict(testing_inputs, batch_size=batch_size, verbose=1)
+        return self.model.predict(testing_inputs, batch_size=batch_size, verbose=2)
