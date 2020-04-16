@@ -1,6 +1,8 @@
+## BanFakeNews: A Dataset for Detecting Fake News in Bangla
+
 ## Fake News Dataset can be collected from [here](https://drive.google.com/uc?export=download&id=1DTozpGosyTo6ZIguaqgrI9BlVdyUAiZI)
 
-- ## Authentic-48K.csv and Fake-1K.csv files conatains following coloumns:
+- ## Authentic-48K.csv and Fake-1K.csv conatain following coloumns:
 
    - articleID : ID of the news
    - domain : News publisher's site name
@@ -10,7 +12,7 @@
    - content: Article or body of the news
    - label: 1 or 0 . '1' for authentic '0' for fake
 
-- ## LabeledAuthentic-7K.csv and LabeledFake-1K.csv files conatains following coloumns:
+- ## LabeledAuthentic-7K.csv and LabeledFake-1K.csv conatain following coloumns:
 
    - articleID : ID of the news
    - domain : News publisher's site name
