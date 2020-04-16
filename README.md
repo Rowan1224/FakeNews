@@ -1,6 +1,6 @@
 ## BanFakeNews: A Dataset for Detecting Fake News in Bangla
 
-## Fake News Dataset can be collected from [here](https://drive.google.com/uc?export=download&id=1DTozpGosyTo6ZIguaqgrI9BlVdyUAiZI)
+## Fake News Dataset can be collected from [here](https://drive.google.com/uc?export=download&id=1DTozpGosyTo6ZIguaqgrI9BlVdyUAiZI).
 
 - ## Authentic-48K.csv and Fake-1K.csv conatain following coloumns:
 
