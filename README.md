@@ -61,7 +61,7 @@ LabeledAuthentic-7K.csv, LabeledFake-1K.csv
 @InProceedings{Hossain20.1084,
  author = {Md Zobaer Hossain, Md Ashraful Rahman, Md Saiful Islam, Sudipta Kar},
  title = "{BanFakeNews: A Dataset for Detecting Fake News in Bangla}",
- booktitle = {Proceedings of the Eleventh International Conference on Language Resources and Evaluation (LREC 2020)},
+ booktitle = {Proceedings of the Twelfth International Conference on Language Resources and Evaluation (LREC 2020)},
  year = {2020},
  publisher = {European Language Resources Association (ELRA)},
 language = {english}
