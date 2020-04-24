@@ -17,7 +17,7 @@ We expect this dataset will be a valuable resource for building technologies to 
 <sup>2</sup> University of Houston
 
 
-## BanFakeNews dataset is available [here](https://drive.google.com/uc?export=download&id=1DTozpGosyTo6ZIguaqgrI9BlVdyUAiZI).
+## BanFakeNews dataset is available [here](https://www.kaggle.com/cryptexcode/banfakenews).
 
 #### List of files
 * Authentic-48K.csv
