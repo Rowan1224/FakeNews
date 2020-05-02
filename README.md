@@ -32,7 +32,7 @@ Authentic-48K.csv and Fake-1K.csv
 | ------------- |------------- |
 | articleID      | ID of the news |
 | domain      | News publisher's site name      |
-| date | Category of the news|
+| date | Published Date|
 | category | Category of the news|
 | headline | Headline of the news|
 | content | Article or body of the news|
