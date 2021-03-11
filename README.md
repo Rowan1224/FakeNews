@@ -73,7 +73,7 @@ Follow the steps below to setup project:
 
 **Basic Experiments**
 * Go to Models/Basic folder
-* Use python n-gram.py [Experiment Name] [Model] [-s](optional) to run an experiment. For example: `python n-gram.py Emb_F SVM -s` will run the Emb_F experiment using SVM Model. Use -s to Save the results. 
+* Use **python n-gram.py [Experiment Name] [Model] [-s](optional)** to run an experiment. For example: `python n-gram.py Emb_F SVM -s` will run the Emb_F experiment using SVM Model. Use -s to Save the results. 
 * **Experiment Names** (Please follow the paper to read the details about experiments) : 
     * Unigram
     * Bigram
@@ -101,14 +101,14 @@ Follow the steps below to setup project:
 
 **NN Experiments**
 * Go to Models/NN folder
-* Use python main.py [Model] [-g](optional) to run an experiment. For example: `python main.py CNN -g` will run the experiment using CNN model. Use -g to run in GPU.
+* Use **python main.py [Model] [-g](optional)** to run an experiment. For example: `python main.py CNN -g` will run the experiment using CNN model. Use -g to run in GPU.
 * Models:
     *  CNN
     *  LSTM
 
 **BERT**
 * Go to Models/BERT folder
-* Use python bert.py [epoch] to run an experiment. For example: `python bert.py 3` will run an experiment with 3 epochs
+* Use **python bert.py [epoch]** to run an experiment. For example: `python bert.py 3` will run an experiment with 3 epochs
 
 ## Bibtex
 ```
