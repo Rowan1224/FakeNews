@@ -21,6 +21,6 @@ gdown https://drive.google.com/uc?id=1rekfv4DzdoxFGJMIAWIX1hMNjtuOzGDM
 gdown https://drive.google.com/uc?id=1GxM2bj_Z0Yuq1zKSAhhhJexyyJ1gm_Rl
 gdown https://drive.google.com/uc?id=1v4EwGvGywpJFcV6EREpt3Q30G4ILdBRJ
 
-cd ..
+cd ../..
 cd data_processing
 python train_test.py
