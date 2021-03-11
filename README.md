@@ -56,6 +56,60 @@ LabeledAuthentic-7K.csv, LabeledFake-1K.csv
 **F-type** is only present in LabeledFake-1K.csv
 
 
+## INSTALLATION
+ Requires the following packages:
+ * Python 3.7
+
+It is recommended to use virtual environment packages such as **virtualenv** or **conda** 
+Follow the steps below to setup project:
+* Clone this repository. `git clone https://github.com/Rowan1697/FakeNews.git`
+* Use this command to install required packages `pip install -r requirements.txt`
+* Run the setup.sh file to download additional data and setup pre-processing
+
+## Usage
+1. Download Fake News data from [here](https://www.kaggle.com/cryptexcode/banfakenews).
+2. Unzip the folder
+3. Ensure the folder name is "Fake News Dataset"
+
+**Basic Experiments**
+* Go to Models/Basic folder
+* Use python n-gram.py [Experiment Name] [Model] [-s](optional) to run an experiment. For example: `python n-gram.py Emb_F SVM -s` will run the Emb_F experiment using SVM Model. Use -s to Save the results. 
+* **Experiment Names** (Please follow the paper to read the details about experiments) : 
+    * Unigram
+    * Bigram
+    * Trigram
+    * U+B+T
+    * C3-gram
+    * C4-gram
+    * C5-gram
+    * C3+C4+C5
+    * Lexical
+    * POS
+    * L_POS
+    * Emb_F
+    * Emb_N
+    * L+POS+E_F
+    * L+POS+E_N
+    * MP
+    * L+POS+E_F+MP
+    * L+POS+E_N+MP
+    * all_features
+* Models:
+    * SVM (Support Vector Machine)
+    * LR (Logistic Regression)
+    * RF (Random Forest)
+
+**NN Experiments**
+* Go to Models/NN folder
+* Use python main.py [Model] [-g](optional) to run an experiment. For example: `python main.py CNN -g` will run the experiment using CNN model. Use -g to run in GPU.
+* Models:
+    *  CNN
+    *  LSTM
+
+**BERT**
+* Go to Models/BERT folder
+* Use python bert.py [epoch] to run an experiment. For example: `python bert.py 3` will run an experiment with 3 epochs
+
 ## Bibtex
 ```
 @InProceedings{Hossain20.1084,
@@ -67,5 +121,3 @@ LabeledAuthentic-7K.csv, LabeledFake-1K.csv
 language = {english}
 }
 ```
-
-## Source code will be available soon.
