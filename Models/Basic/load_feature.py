@@ -101,12 +101,12 @@ def tfidf_charF(X, a, b, save_model=False):
                                  decode_error='replace', encoding='utf-8', analyzer='char')
 
     tfidf_char.fit(X.values.astype('U'))
-    if save_model:
-        name = "tfidf_char.pkl"
-        path = config.API+name
-        outfile = open(path, 'wb')
-        pickle.dump(tfidf_char, outfile)
-        outfile.close()
+#     if save_model:
+#         name = "tfidf_char.pkl"
+#         path = config.API+name
+#         outfile = open(path, 'wb')
+#         pickle.dump(tfidf_char, outfile)
+#         outfile.close()
     x_char = tfidf_char.transform(X.values.astype('U'))
     return x_char
 
@@ -120,12 +120,12 @@ def tfidf_wordF(X, a, b):
     
     tfidf_word.fit(X.values.astype('U'))
 
-    if save_model:
-        name = "tfidf_word.pkl"
-        path = config.API+name
-        outfile = open(path, 'wb')
-        pickle.dump(tfidf_char, outfile)
-        outfile.close()
+#     if save_model:
+#         name = "tfidf_word.pkl"
+#         path = config.API+name
+#         outfile = open(path, 'wb')
+#         pickle.dump(tfidf_char, outfile)
+#         outfile.close()
     
     x_word = tfidf_word.transform(X.values.astype('U'))
     return x_word
