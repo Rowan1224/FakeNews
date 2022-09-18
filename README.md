@@ -1,5 +1,12 @@
 ## BanFakeNews: A Dataset for Detecting Fake News in Bangla (LREC 2020)
 
+
+**Recent Update**
+
+
+A new notebook (``BanFake.ipynb``) has been added to the repository to make it easier to use Huggingface’s Transformer package and experiment with new language models. 
+
+
 **Abstract**
 
 Observing the damages that can be done by the rapid propagation of fake news in various sectors like politics and finance, automatic identification of fake news using linguistic analysis has drawn the attention of the research community. However, such methods are largely being developed for English where low resource languages remain out of the focus. But the risks spawned by fake and manipulative news are not confined by languages. In this work, we propose an annotated dataset of ~50K news that can be used for building automated fake news detection systems for a low resource language like Bangla. Additionally, we provide an analysis of the dataset and develop a benchmark system with state of the art NLP techniques to identify Bangla fake news. To create this system, we explore traditional linguistic features and neural network based methods.
