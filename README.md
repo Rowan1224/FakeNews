@@ -69,7 +69,7 @@ LabeledAuthentic-7K.csv, LabeledFake-1K.csv
 
 It is recommended to use virtual environment packages such as **virtualenv** or **conda** 
 Follow the steps below to setup project:
-* Clone this repository. `git clone https://github.com/Rowan1697/FakeNews.git`
+* Clone this repository. `git clone https://github.com/Rowan1224/FakeNews.git`
 * Use this command to install required packages `pip install -r requirements.txt`
 * Run the setup.sh file to download additional data and setup pre-processing
 
